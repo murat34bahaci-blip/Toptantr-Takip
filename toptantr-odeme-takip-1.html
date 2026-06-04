@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07090f">
+<title>Toptantr Takip</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #07090f;
+  --s1: #0d1120;
+  --s2: #111827;
+  --s3: #1a2235;
+  --border: #1e2d45;
+  --border2: #263347;
+  --accent: #00c8f5;
+  --green: #00e87a;
+  --orange: #ff8c42;
+  --red: #ff4455;
+  --yellow: #ffd166;
+  --text: #ddeeff;
+  --muted: #4a6080;
+  --muted2: #2a3d55;
+  --fh: 'Syne', sans-serif;
+  --fm: 'Space Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: var(--fh);
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+/* ===== NAV TABS ===== */
+.nav-tabs {
+  display: flex;
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1;
+  padding: 14px 4px 12px;
+  text-align: center;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  user-select: none;
+}
+.nav-tab .tab-icon { font-size: 18px; display: block; margin-bottom: 3px; }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ===== PAGES ===== */
+.page { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.page.active { display: flex; }
+.page-scroll { overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
+
+/* ===== HEADER ===== */
+.page-header {
+  padding: 16px 16px 12px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.page-title {
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  color: var(--text);
+}
+.page-title span { color: var(--accent); }
+.page-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: var(--fm); }
+
+/* ===== TOOLBAR ===== */
+.toolbar {
+  padding: 10px 12px;
+  display: flex; gap: 6px; align-items: center;
+  background: var(--s2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.search-wrap { flex: 1; position: relative; }
+.search-wrap input {
+  width: 100%; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-family: var(--fm); font-size: 13px;
+  padding: 9px 10px 9px 34px; outline: none;
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: var(--accent); }
+.s-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted); }
+.fbtn {
+  padding: 9px 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--muted); font-family: var(--fh);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.fbtn.act { border-color: var(--accent); color: var(--accent); background: rgba(0,200,245,0.08); }
+
+/* ===== SUMMARY BAR ===== */
+.sum-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; padding: 10px 12px;
+  background: var(--s2); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sum-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 6px; text-align: center;
+}
+.sum-val { font-family: var(--fm); font-size: 15px; font-weight: 700; line-height: 1; }
+.sum-lbl { font-size: 9px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.c-accent { color: var(--accent); }
+.c-green  { color: var(--green); }
+.c-red    { color: var(--red); }
+.c-yellow { color: var(--yellow); }
+
+/* ===== ORDER CARD ===== */
+.order-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 14px; margin: 0 12px 8px;
+  overflow: hidden; transition: border-color 0.2s;
+}
+.order-card.paid-card { border-color: rgba(0,232,122,0.25); }
+.order-card.urgent { border-color: rgba(255,68,85,0.4); }
+.order-card.soon   { border-color: rgba(255,209,102,0.35); }
+
+.order-main {
+  display: flex; align-items: center;
+  padding: 13px 12px; gap: 10px; cursor: pointer;
+}
+.pay-btn {
+  width: 30px; height: 30px; flex-shrink: 0;
+  border-radius: 8px; border: 2px solid var(--border2);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.18s; color: transparent;
+}
+.pay-btn.is-paid { background: var(--green); border-color: var(--green); color: #000; }
+.pay-btn:not(.is-paid):active { border-color: var(--green); }
+
+.ord-info { flex: 1; min-width: 0; }
+.ord-no {
+  font-family: var(--fm); font-size: 13px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ord-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.ord-date { font-size: 10px; color: var(--muted); font-family: var(--fm); }
+
+/* Countdown badge */
+.countdown {
+  font-size: 10px; font-weight: 700; font-family: var(--fm);
+  padding: 2px 7px; border-radius: 6px; white-space: nowrap;
+}
+.cd-overdue { background: rgba(255,68,85,0.15); color: var(--red); border: 1px solid rgba(255,68,85,0.3); }
+.cd-urgent  { background: rgba(255,68,85,0.1);  color: var(--orange); border: 1px solid rgba(255,140,66,0.3); }
+.cd-soon    { background: rgba(255,209,102,0.1); color: var(--yellow); border: 1px solid rgba(255,209,102,0.3); }
+.cd-ok      { background: rgba(0,232,122,0.08);  color: var(--green);  border: 1px solid rgba(0,232,122,0.2); }
+
+.ord-right { text-align: right; flex-shrink: 0; }
+.ord-amt {
+  font-family: var(--fm); font-size: 14px; font-weight: 700;
+  color: var(--text);
+}
+.ord-amt.has-amt { color: var(--green); }
+.ord-status { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
+.ord-status.paid { color: var(--green); }
+.ord-status.unpaid { color: var(--red); }
+
+/* Expand panel */
+.ord-expand {
+  border-top: 1px solid var(--border);
+  padding: 12px; display: none; flex-direction: column; gap: 8px;
+}
+.ord-expand.open { display: flex; }
+
+.exp-row { display: flex; gap: 8px; align-items: center; }
+.exp-lbl { font-size: 10px; color: var(--muted); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px; width: 68px; flex-shrink: 0; }
+.exp-inp {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: var(--fm);
+  font-size: 13px; padding: 8px 10px; outline: none;
+}
+.exp-inp:focus { border-color: var(--accent); }
+.exp-sel {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: var(--fh);
+  font-size: 13px; padding: 8px 10px; outline: none;
+  -webkit-appearance: none;
+}
+.exp-actions { display: flex; gap: 8px; }
+.save-btn {
+  flex: 1; padding: 9px; border-radius: 8px;
+  border: 1px solid rgba(0,200,245,0.3); background: rgba(0,200,245,0.08);
+  color: var(--accent); font-family: var(--fh); font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.del-btn {
+  padding: 9px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,68,85,0.3); background: rgba(255,68,85,0.08);
+  color: var(--red); font-size: 13px; cursor: pointer;
+}
+
+/* List labels */
+.list-lbl {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 14px 12px 8px;
+}
+
+/* ===== FAB ===== */
+.fab {
+  position: fixed; bottom: 20px; right: 16px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent) 0%, #0099cc 100%);
+  border: none; color: #000; font-size: 26px; font-weight: 300;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(0,200,245,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.fab:active { transform: scale(0.92); }
+
+/* ===== MODAL ===== */
+.modal-bg {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal {
+  width: 100%; max-width: 500px;
+  background: var(--s3); border-radius: 22px 22px 0 0;
+  border: 1px solid var(--border2); border-bottom: none;
+  padding: 18px 18px 32px;
+  transform: translateY(50px);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-bg.open .modal { transform: translateY(0); }
+.m-handle { width: 38px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 14px; }
+.m-title { font-size: 17px; font-weight: 800; color: var(--accent); margin-bottom: 14px; }
+.m-field { margin-bottom: 10px; }
+.m-field label { display: block; font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.m-field input, .m-field select {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-family: var(--fm);
+  font-size: 14px; padding: 11px 13px; outline: none;
+  transition: border-color 0.2s; -webkit-appearance: none;
+}
+.m-field input:focus, .m-field select:focus { border-color: var(--accent); }
+.m-field input::placeholder { color: var(--muted); }
+.m-row { display: flex; gap: 8px; }
+.m-row .m-field { flex: 1; }
+.m-btns { display: flex; gap: 10px; margin-top: 14px; }
+.m-cancel {
+  flex: 1; padding: 13px; border-radius: 12px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); font-family: var(--fh); font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.m-add {
+  flex: 2; padding: 13px; border-radius: 12px;
+  border: none; background: linear-gradient(135deg, var(--accent), #0099cc);
+  color: #000; font-family: var(--fh); font-size: 14px; font-weight: 800; cursor: pointer;
+}
+
+/* ===== FORECAST PAGE ===== */
+.fc-hero {
+  margin: 12px; padding: 16px;
+  background: linear-gradient(135deg, rgba(0,200,245,0.1), rgba(0,232,122,0.06));
+  border: 1px solid rgba(0,200,245,0.2); border-radius: 16px;
+}
+.fc-hero-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+.fc-hero-amount { font-family: var(--fm); font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 6px; }
+.fc-hero-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: var(--fm); }
+
+.fc-section { padding: 0 12px; }
+.fc-section-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 14px 0 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.fc-badge {
+  font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 700;
+}
+
+.fc-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 13px 14px;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+}
+.fc-card.overdue { border-color: rgba(255,68,85,0.35); }
+.fc-card.urgent  { border-color: rgba(255,140,66,0.35); }
+.fc-card.soon    { border-color: rgba(255,209,102,0.3); }
+.fc-card.future  { border-color: var(--border); }
+
+.fc-day-badge {
+  width: 46px; height: 46px; flex-shrink: 0;
+  border-radius: 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-family: var(--fm);
+}
+.fc-day-badge.overdue { background: rgba(255,68,85,0.15); }
+.fc-day-badge.urgent  { background: rgba(255,140,66,0.12); }
+.fc-day-badge.soon    { background: rgba(255,209,102,0.1); }
+.fc-day-badge.future  { background: var(--s3); }
+
+.fc-day-num { font-size: 16px; font-weight: 700; line-height: 1; }
+.fc-day-num.overdue { color: var(--red); }
+.fc-day-num.urgent  { color: var(--orange); }
+.fc-day-num.soon    { color: var(--yellow); }
+.fc-day-num.future  { color: var(--muted); }
+.fc-day-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+.fc-info { flex: 1; min-width: 0; }
+.fc-no { font-family: var(--fm); font-size: 13px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fc-date-line { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--fm); }
+
+.fc-amt { font-family: var(--fm); font-size: 14px; font-weight: 700; text-align: right; flex-shrink: 0; }
+.fc-amt.has-amt { color: var(--green); }
+
+/* Timeline bar */
+.timeline-wrap { margin: 0 12px 16px; }
+.tl-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 14px 0 10px; }
+.tl-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.tl-label { font-size: 11px; color: var(--muted); width: 56px; flex-shrink: 0; font-family: var(--fm); text-align: right; }
+.tl-bar-wrap { flex: 1; height: 6px; background: var(--s3); border-radius: 3px; overflow: hidden; }
+.tl-bar { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.tl-count { font-size: 11px; color: var(--muted); font-family: var(--fm); width: 20px; flex-shrink: 0; }
+.tl-amount { font-size: 11px; color: var(--accent); font-family: var(--fm); flex-shrink: 0; text-align: right; min-width: 70px; }
+
+/* Settings page */
+.set-section { padding: 12px; }
+.set-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 12px;
+}
+.set-card-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.set-row:last-child { margin-bottom: 0; }
+.set-row-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.set-row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.set-input {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--accent); font-family: var(--fm);
+  font-size: 16px; font-weight: 700; padding: 8px 12px; outline: none;
+  width: 70px; text-align: center;
+}
+.set-input:focus { border-color: var(--accent); }
+.set-btn {
+  width: 100%; padding: 13px; border-radius: 12px;
+  border: 1px solid rgba(255,68,85,0.3); background: rgba(255,68,85,0.08);
+  color: var(--red); font-family: var(--fh); font-size: 14px; font-weight: 700;
+  cursor: pointer; margin-top: 4px;
+}
+.set-info {
+  font-size: 12px; color: var(--muted); line-height: 1.6;
+  background: var(--s1); border-radius: 10px; padding: 12px; margin-bottom: 12px;
+}
+
+/* Empty */
+.empty { text-align: center; padding: 50px 20px; }
+.empty-icon { font-size: 44px; margin-bottom: 10px; }
+.empty-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.empty-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(16px);
+  background: var(--s3); border: 1px solid var(--border2);
+  border-radius: 28px; padding: 9px 18px;
+  font-size: 13px; font-weight: 700; opacity: 0; transition: all 0.25s;
+  z-index: 500; white-space: nowrap; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok  { color: var(--green); border-color: rgba(0,232,122,0.3); }
+.toast.err { color: var(--red);   border-color: rgba(255,68,85,0.3); }
+.toast.inf { color: var(--accent);border-color: rgba(0,200,245,0.3); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-tabs">
+  <div class="nav-tab active" onclick="showPage('orders',this)">
+    <span class="tab-icon">📦</span>Siparişler
+  </div>
+  <div class="nav-tab" onclick="showPage('forecast',this)">
+    <span class="tab-icon">📅</span>Tahmin
+  </div>
+  <div class="nav-tab" onclick="showPage('settings',this)">
+    <span class="tab-icon">⚙️</span>Ayarlar
+  </div>
+</nav>
+
+<!-- ===== PAGE: SİPARİŞLER ===== -->
+<div class="page active" id="page-orders">
+
+  <div class="page-header">
+    <div class="page-title">Toptantr <span>Takip</span></div>
+    <div class="page-sub" id="hdr-sub">Yükleniyor...</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="search-inp" placeholder="Sipariş no ara..." autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button class="fbtn act" data-f="all"     onclick="setFilter('all',this)">Tümü</button>
+    <button class="fbtn"     data-f="unpaid"  onclick="setFilter('unpaid',this)">Bekliyor</button>
+    <button class="fbtn"     data-f="paid"    onclick="setFilter('paid',this)">Ödendi</button>
+  </div>
+
+  <div class="sum-bar">
+    <div class="sum-card"><div class="sum-val c-accent" id="s-total">0</div><div class="sum-lbl">Toplam</div></div>
+    <div class="sum-card"><div class="sum-val c-green"  id="s-paid">0</div><div class="sum-lbl">Ödendi</div></div>
+    <div class="sum-card"><div class="sum-val c-red"    id="s-unpaid">0</div><div class="sum-lbl">Bekliyor</div></div>
+    <div class="sum-card"><div class="sum-val c-yellow" id="s-amount">₺0</div><div class="sum-lbl">Bekleyen ₺</div></div>
+  </div>
+
+  <div class="page-scroll">
+    <div class="list-lbl" id="list-lbl">Siparişler</div>
+    <div id="order-list"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: TAHMİN ===== -->
+<div class="page" id="page-forecast">
+  <div class="page-header">
+    <div class="page-title">Ödeme <span>Tahmini</span></div>
+    <div class="page-sub" id="fc-sub">+40 gün kuralına göre</div>
+  </div>
+  <div class="page-scroll" id="fc-content">
+    <!-- JS ile doldurulacak -->
+  </div>
+</div>
+
+<!-- ===== PAGE: AYARLAR ===== -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <div class="page-title">⚙️ <span>Ayarlar</span></div>
+    <div class="page-sub">Uygulama tercihleri</div>
+  </div>
+  <div class="page-scroll">
+    <div class="set-section">
+
+      <div class="set-info">
+        💡 Verileriniz telefonda kalıcı olarak saklanır. Tarayıcıyı kapatıp açsanız da silinmez. Uygulamayı silmeden veriler güvendedir.
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-title">⏱ Ödeme Gecikme Süresi</div>
+        <div class="set-row">
+          <div>
+            <div class="set-row-label">Tahmini ödeme günü</div>
+            <div class="set-row-sub">Sipariş tarihinden kaç gün sonra ödeme bekleniyor?</div>
+          </div>
+          <input class="set-input" type="number" id="delay-input" value="40" min="1" max="365">
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-row-label">Ödeme tarihi hesabı</div>
+            <div class="set-row-sub">Tarih kaynağı nasıl seçilsin?</div>
+          </div>
+        </div>
+        <div class="set-row">
+          <select class="exp-sel" id="date-mode-select" style="flex:1" onchange="saveDateMode()">
+            <option value="entry">Giriş tarihinden +gün</option>
+            <option value="manual">Manuel sipariş tarihinden +gün</option>
+            <option value="both">Her ikisi (ben seçeyim)</option>
+          </select>
+        </div>
+        <button class="save-btn" style="margin-top:8px" onclick="saveDelaySetting()">💾 Kaydet</button>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-title">📊 İstatistikler</div>
+        <div id="stats-content" style="font-family:var(--fm); font-size:12px; color:var(--muted); line-height:2;"></div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-title">🗑 Veri Yönetimi</div>
+        <button class="set-btn" onclick="clearAllData()">Tüm Verileri Sil</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab-btn" onclick="openModal()">+</button>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">➕ Yeni Sipariş</div>
+
+    <div class="m-field">
+      <label>Sipariş Numarası *</label>
+      <input type="text" id="inp-no" placeholder="Toptantr78934899" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="m-row">
+      <div class="m-field">
+        <label>Tutar (₺)</label>
+        <input type="number" id="inp-amt" placeholder="0.00" step="0.01" inputmode="decimal">
+      </div>
+      <div class="m-field" id="m-date-field">
+        <label>Sipariş Tarihi</label>
+        <input type="date" id="inp-date">
+      </div>
+    </div>
+    <div class="m-field" id="m-entry-date-field" style="display:none">
+      <label>Giriş Tarihi</label>
+      <input type="date" id="inp-entry-date">
+    </div>
+    <div class="m-field">
+      <label>Not (opsiyonel)</label>
+      <input type="text" id="inp-note" placeholder="Müşteri adı, ürün vb.">
+    </div>
+
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal()">Vazgeç</button>
+      <button class="m-add"    onclick="addOrder()">Sipariş Ekle</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==============================
+// STATE & STORAGE
+// ==============================
+const STORE   = 'tt_orders_v3';
+const SETSTORE = 'tt_settings_v1';
+
+let orders = [];
+let settings = { delay: 40, dateMode: 'both' }; // dateMode: entry | manual | both
+let filter = 'all';
+let searchQ = '';
+
+function loadData() {
+  try { const r = localStorage.getItem(STORE);    if(r) orders   = JSON.parse(r); } catch(e){}
+  try { const s = localStorage.getItem(SETSTORE); if(s) settings = {...settings, ...JSON.parse(s)}; } catch(e){}
+}
+function saveData()     { localStorage.setItem(STORE,    JSON.stringify(orders)); }
+function saveSettings() { localStorage.setItem(SETSTORE, JSON.stringify(settings)); }
+
+// ==============================
+// DATE HELPERS
+// ==============================
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split('T')[0];
+}
+
+function daysDiff(targetStr) {
+  // positive = future, negative = overdue
+  const now = new Date(); now.setHours(0,0,0,0);
+  const tgt = new Date(targetStr + 'T00:00:00');
+  return Math.round((tgt - now) / 86400000);
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('tr-TR', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function fmtMoney(v) {
+  if (!v && v !== 0) return '—';
+  return '₺' + parseFloat(v).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// Get the "base date" for an order based on settings
+function getBaseDate(o) {
+  if (settings.dateMode === 'entry')  return o.entryDate || o.date || today();
+  if (settings.dateMode === 'manual') return o.date || o.entryDate || today();
+  // 'both' — prefer manual date if set, else entry date
+  return o.date || o.entryDate || today();
+}
+
+function getExpectedPayDate(o) {
+  const base = getBaseDate(o);
+  return addDays(base, settings.delay);
+}
+
+function getCountdownClass(days) {
+  if (days < 0)  return 'overdue';
+  if (days <= 5) return 'urgent';
+  if (days <= 14) return 'soon';
+  return 'ok';
+}
+
+function countdownLabel(days) {
+  if (days < 0)  return Math.abs(days) + 'g gecikti';
+  if (days === 0) return 'Bugün!';
+  if (days === 1) return 'Yarın';
+  return days + 'g kaldı';
+}
+
+// ==============================
+// NAVIGATION
+// ==============================
+function showPage(name, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  tab.classList.add('active');
+  document.getElementById('fab-btn').style.display = name === 'orders' ? 'flex' : 'none';
+  if (name === 'forecast') renderForecast();
+  if (name === 'settings') renderSettings();
+}
+
+// ==============================
+// FILTER
+// ==============================
+function setFilter(f, el) {
+  filter = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('act'));
+  el.classList.add('act');
+  renderOrders();
+}
+
+document.getElementById('search-inp').addEventListener('input', e => {
+  searchQ = e.target.value.trim().toLowerCase();
+  renderOrders();
+});
+
+// ==============================
+// RENDER ORDERS
+// ==============================
+function renderOrders() {
+  let vis = orders.filter(o => {
+    if (filter === 'paid'   && !o.paid) return false;
+    if (filter === 'unpaid' &&  o.paid) return false;
+    if (searchQ && !o.no.toLowerCase().includes(searchQ) && !(o.note||'').toLowerCase().includes(searchQ)) return false;
+    return true;
+  });
+
+  vis.sort((a,b) => {
+    if (a.paid !== b.paid) return a.paid ? 1 : -1;
+    const da = getExpectedPayDate(a), db = getExpectedPayDate(b);
+    return da.localeCompare(db);
+  });
+
+  const paidCount   = orders.filter(o=>o.paid).length;
+  const unpaidCount = orders.filter(o=>!o.paid).length;
+  const unpaidAmt   = orders.filter(o=>!o.paid && o.amount).reduce((s,o)=>s+parseFloat(o.amount),0);
+
+  document.getElementById('s-total').textContent  = orders.length;
+  document.getElementById('s-paid').textContent   = paidCount;
+  document.getElementById('s-unpaid').textContent = unpaidCount;
+  document.getElementById('s-amount').textContent = unpaidAmt > 0 ? '₺' + Math.round(unpaidAmt).toLocaleString('tr-TR') : '₺0';
+  document.getElementById('hdr-sub').textContent  = paidCount + ' ödendi · ' + unpaidCount + ' bekliyor';
+
+  let lbl = 'Tüm Siparişler';
+  if (filter==='paid')   lbl = '✅ Ödenmiş';
+  if (filter==='unpaid') lbl = '⏳ Bekleyen';
+  if (searchQ) lbl = '"' + searchQ + '" sonuçları';
+  document.getElementById('list-lbl').textContent = lbl + ' (' + vis.length + ')';
+
+  const el = document.getElementById('order-list');
+  if (!vis.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">${filter==='paid'?'✅':filter==='unpaid'?'⏳':'📦'}</div>
+      <div class="empty-title">${searchQ?'Sonuç bulunamadı':'Henüz sipariş yok'}</div>
+      <div class="empty-sub">${searchQ?'Farklı bir sipariş numarası deneyin.':'Sağ alttaki + butonuna basarak sipariş ekleyin.'}</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = vis.map(o => {
+    const expDate = getExpectedPayDate(o);
+    const days    = daysDiff(expDate);
+    const cdClass = o.paid ? 'ok' : getCountdownClass(days);
+    const cdLabel = o.paid ? 'ÖDENDİ' : countdownLabel(days);
+
+    let cardExtra = '';
+    if (!o.paid) {
+      if (days < 0)   cardExtra = 'urgent';
+      else if (days <= 5)  cardExtra = 'urgent';
+      else if (days <= 14) cardExtra = 'soon';
+    }
+    if (o.paid) cardExtra = 'paid-card';
+
+    const baseDateStr = getBaseDate(o);
+
+    return `<div class="order-card ${cardExtra}" id="card-${o.id}">
+      <div class="order-main" onclick="toggleExp('${o.id}')">
+        <button class="pay-btn ${o.paid?'is-paid':''}" onclick="event.stopPropagation();togglePaid('${o.id}')">${o.paid?'✓':''}</button>
+        <div class="ord-info">
+          <div class="ord-no">${esc(o.no)}</div>
+          <div class="ord-meta">
+            ${baseDateStr ? `<span class="ord-date">${fmtDate(baseDateStr)}</span>` : ''}
+            ${!o.paid ? `<span class="countdown cd-${cdClass}">${cdLabel}</span>` : ''}
+            ${o.note ? `<span class="ord-date" style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.note)}</span>` : ''}
+          </div>
+        </div>
+        <div class="ord-right">
+          <div class="ord-amt ${o.amount?'has-amt':''}">${fmtMoney(o.amount)}</div>
+          <div class="ord-status ${o.paid?'paid':'unpaid'}">${o.paid?'ÖDENDİ':'BEKLİYOR'}</div>
+        </div>
+      </div>
+      <div class="ord-expand" id="exp-${o.id}">
+        <div class="exp-row">
+          <span class="exp-lbl">Tutar</span>
+          <input class="exp-inp" type="number" step="0.01" inputmode="decimal" value="${o.amount||''}" placeholder="₺ tutar girin" id="ea-${o.id}">
+        </div>
+        <div class="exp-row">
+          <span class="exp-lbl">Sip. Tarihi</span>
+          <input class="exp-inp" type="date" value="${o.date||''}" id="ed-${o.id}">
+        </div>
+        ${settings.dateMode==='both' ? `<div class="exp-row">
+          <span class="exp-lbl">Giriş Tar.</span>
+          <input class="exp-inp" type="date" value="${o.entryDate||''}" id="ee-${o.id}">
+        </div>` : ''}
+        <div class="exp-row">
+          <span class="exp-lbl">Not</span>
+          <input class="exp-inp" type="text" value="${escA(o.note||'')}" placeholder="Not..." id="en-${o.id}">
+        </div>
+        <div style="background:rgba(0,200,245,0.06);border:1px solid rgba(0,200,245,0.15);border-radius:8px;padding:8px 10px;font-size:11px;font-family:var(--fm);color:var(--muted)">
+          📅 Tahmini ödeme: <strong style="color:var(--accent)">${fmtDate(expDate)}</strong>
+          ${!o.paid ? `<span style="color:${days<0?'var(--red)':days<=5?'var(--orange)':days<=14?'var(--yellow)':'var(--green)'};margin-left:6px">${countdownLabel(days)}</span>` : ''}
+        </div>
+        <div class="exp-actions">
+          <button class="save-btn" onclick="saveEdits('${o.id}')">💾 Kaydet</button>
+          <button class="del-btn" onclick="deleteOrder('${o.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ==============================
+// RENDER FORECAST
+// ==============================
+function renderForecast() {
+  const unpaid = orders.filter(o => !o.paid);
+  const el = document.getElementById('fc-content');
+
+  if (!unpaid.length) {
+    el.innerHTML = `<div class="empty" style="padding-top:60px">
+      <div class="empty-icon">🎉</div>
+      <div class="empty-title">Bekleyen ödeme yok!</div>
+      <div class="empty-sub">Tüm siparişler ödenmiş görünüyor.</div>
+    </div>`;
+    document.getElementById('fc-sub').textContent = '+' + settings.delay + ' gün kuralına göre';
+    return;
+  }
+
+  // Compute expected dates
+  const enriched = unpaid.map(o => ({
+    ...o,
+    expDate: getExpectedPayDate(o),
+    daysLeft: daysDiff(getExpectedPayDate(o))
+  })).sort((a,b) => a.expDate.localeCompare(b.expDate));
+
+  const totalAmt = enriched.filter(o=>o.amount).reduce((s,o)=>s+parseFloat(o.amount),0);
+  document.getElementById('fc-sub').textContent = '+' + settings.delay + ' gün kuralına göre · ' + enriched.length + ' sipariş';
+
+  // Groups
+  const overdue = enriched.filter(o => o.daysLeft < 0);
+  const thisWeek = enriched.filter(o => o.daysLeft >= 0 && o.daysLeft <= 7);
+  const thisMonth = enriched.filter(o => o.daysLeft > 7 && o.daysLeft <= 30);
+  const later = enriched.filter(o => o.daysLeft > 30);
+
+  // Timeline data (by week buckets)
+  const weekBuckets = {};
+  enriched.forEach(o => {
+    const wk = Math.floor(Math.max(0, o.daysLeft) / 7);
+    const label = wk === 0 ? 'Bu hafta' : wk === 1 ? '1-2 hafta' : wk === 2 ? '2-3 hafta' : wk === 3 ? '3-4 hafta' : '4+ hafta';
+    if (!weekBuckets[label]) weekBuckets[label] = { count: 0, amount: 0 };
+    weekBuckets[label].count++;
+    weekBuckets[label].amount += o.amount ? parseFloat(o.amount) : 0;
+  });
+
+  const maxCount = Math.max(...Object.values(weekBuckets).map(b=>b.count), 1);
+
+  function fcCards(list) {
+    return list.map(o => {
+      const cls = o.daysLeft < 0 ? 'overdue' : o.daysLeft <= 5 ? 'urgent' : o.daysLeft <= 14 ? 'soon' : 'future';
+      const absDays = Math.abs(o.daysLeft);
+      return `<div class="fc-card ${cls}">
+        <div class="fc-day-badge ${cls}">
+          <div class="fc-day-num ${cls}">${o.daysLeft < 0 ? '-' + absDays : (o.daysLeft === 0 ? '!' : o.daysLeft)}</div>
+          <div class="fc-day-sub">${o.daysLeft < 0 ? 'gecikti' : o.daysLeft === 0 ? 'bugün' : 'gün'}</div>
+        </div>
+        <div class="fc-info">
+          <div class="fc-no">${esc(o.no)}</div>
+          <div class="fc-date-line">📅 ${fmtDate(o.expDate)}</div>
+        </div>
+        <div class="fc-amt ${o.amount?'has-amt':''}">${fmtMoney(o.amount)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  let html = `
+  <div class="fc-hero">
+    <div class="fc-hero-title">Toplam Beklenen Ödeme</div>
+    <div class="fc-hero-amount">${totalAmt > 0 ? fmtMoney(totalAmt) : enriched.length + ' sipariş'}</div>
+    <div class="fc-hero-sub">${enriched.length} bekleyen sipariş · ${settings.delay} günlük kural</div>
+  </div>`;
+
+  // Timeline
+  html += `<div class="timeline-wrap">
+    <div class="tl-title">Haftalık Dağılım</div>`;
+  const tlColors = ['#ff4455','#ff8c42','#ffd166','#00e87a','#00c8f5'];
+  let ci = 0;
+  for (const [lbl, data] of Object.entries(weekBuckets)) {
+    const w = Math.round((data.count / maxCount) * 100);
+    html += `<div class="tl-row">
+      <div class="tl-label">${lbl}</div>
+      <div class="tl-bar-wrap"><div class="tl-bar" style="width:${w}%;background:${tlColors[ci%tlColors.length]}"></div></div>
+      <div class="tl-count">${data.count}</div>
+      <div class="tl-amount">${data.amount > 0 ? fmtMoney(data.amount) : ''}</div>
+    </div>`;
+    ci++;
+  }
+  html += `</div>`;
+
+  if (overdue.length) {
+    html += `<div class="fc-section">
+      <div class="fc-section-title">🔴 Gecikmiş <span class="fc-badge" style="background:rgba(255,68,85,0.15);color:var(--red)">${overdue.length} sipariş</span></div>
+      ${fcCards(overdue)}
+    </div>`;
+  }
+  if (thisWeek.length) {
+    html += `<div class="fc-section">
+      <div class="fc-section-title">🟡 Bu Hafta <span class="fc-badge" style="background:rgba(255,209,102,0.1);color:var(--yellow)">${thisWeek.length} sipariş</span></div>
+      ${fcCards(thisWeek)}
+    </div>`;
+  }
+  if (thisMonth.length) {
+    html += `<div class="fc-section">
+      <div class="fc-section-title">🟢 Bu Ay <span class="fc-badge" style="background:rgba(0,232,122,0.08);color:var(--green)">${thisMonth.length} sipariş</span></div>
+      ${fcCards(thisMonth)}
+    </div>`;
+  }
+  if (later.length) {
+    html += `<div class="fc-section">
+      <div class="fc-section-title">🔵 Sonraki Aylar <span class="fc-badge" style="background:rgba(0,200,245,0.08);color:var(--accent)">${later.length} sipariş</span></div>
+      ${fcCards(later)}
+    </div>`;
+  }
+
+  html += '<div style="height:20px"></div>';
+  el.innerHTML = html;
+}
+
+// ==============================
+// RENDER SETTINGS
+// ==============================
+function renderSettings() {
+  document.getElementById('delay-input').value = settings.delay;
+  document.getElementById('date-mode-select').value = settings.dateMode;
+
+  const paid = orders.filter(o=>o.paid).length;
+  const unpaid = orders.filter(o=>!o.paid).length;
+  const totalAmt = orders.filter(o=>o.amount).reduce((s,o)=>s+parseFloat(o.amount),0);
+  const paidAmt  = orders.filter(o=>o.paid&&o.amount).reduce((s,o)=>s+parseFloat(o.amount),0);
+
+  document.getElementById('stats-content').innerHTML =
+    `Toplam sipariş: ${orders.length}<br>` +
+    `Ödenen: ${paid} · Bekleyen: ${unpaid}<br>` +
+    (totalAmt > 0 ? `Toplam tutar: ${fmtMoney(totalAmt)}<br>` : '') +
+    (paidAmt  > 0 ? `Tahsil edilen: ${fmtMoney(paidAmt)}<br>` : '') +
+    `Ödeme günü ayarı: +${settings.delay} gün`;
+}
+
+function saveDelaySetting() {
+  const v = parseInt(document.getElementById('delay-input').value);
+  if (!v || v < 1 || v > 365) { toast('❗ 1-365 arası gün girin', 'err'); return; }
+  settings.delay = v;
+  saveSettings();
+  toast('✅ ' + v + ' gün olarak kaydedildi', 'ok');
+}
+
+function saveDateMode() {
+  settings.dateMode = document.getElementById('date-mode-select').value;
+  saveSettings();
+  updateModalFields();
+}
+
+function clearAllData() {
+  if (!confirm('Tüm siparişler silinecek! Emin misiniz?')) return;
+  orders = [];
+  saveData();
+  renderOrders();
+  toast('🗑 Tüm veriler silindi', 'err');
+}
+
+// ==============================
+// ORDER CRUD
+// ==============================
+function togglePaid(id) {
+  const o = orders.find(x=>x.id===id);
+  if (!o) return;
+  o.paid = !o.paid;
+  o.paidAt = o.paid ? new Date().toISOString() : null;
+  saveData();
+  toast(o.paid ? '✅ Ödeme alındı!' : '⏳ Ödeme bekleniyor', o.paid ? 'ok' : 'err');
+  renderOrders();
+}
+
+function toggleExp(id) {
+  document.getElementById('exp-' + id)?.classList.toggle('open');
+}
+
+function saveEdits(id) {
+  const o = orders.find(x=>x.id===id);
+  if (!o) return;
+  const amt = document.getElementById('ea-'+id)?.value;
+  const dt  = document.getElementById('ed-'+id)?.value;
+  const ee  = document.getElementById('ee-'+id)?.value;
+  const note = document.getElementById('en-'+id)?.value;
+  if (amt  !== undefined) o.amount    = amt  ? parseFloat(amt) : null;
+  if (dt   !== undefined) o.date      = dt   || null;
+  if (ee   !== undefined) o.entryDate = ee   || null;
+  if (note !== undefined) o.note      = note;
+  saveData();
+  toast('💾 Kaydedildi', 'ok');
+  renderOrders();
+}
+
+function deleteOrder(id) {
+  if (!confirm('Bu siparişi silmek istediğinizden emin misiniz?')) return;
+  orders = orders.filter(x=>x.id!==id);
+  saveData();
+  toast('🗑 Silindi', 'err');
+  renderOrders();
+}
+
+// ==============================
+// MODAL
+// ==============================
+function updateModalFields() {
+  // Show/hide entry date field based on mode
+  const mode = settings.dateMode;
+  document.getElementById('m-date-field').style.display = (mode === 'entry') ? 'none' : '';
+  document.getElementById('m-entry-date-field').style.display = (mode === 'both') ? '' : 'none';
+}
+
+function openModal() {
+  updateModalFields();
+  document.getElementById('modal').classList.add('open');
+  const t = today();
+  document.getElementById('inp-date').value = t;
+  document.getElementById('inp-entry-date').value = t;
+  setTimeout(() => document.getElementById('inp-no').focus(), 200);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  ['inp-no','inp-amt','inp-date','inp-entry-date','inp-note'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+function addOrder() {
+  const no = document.getElementById('inp-no').value.trim();
+  if (!no) { toast('❗ Sipariş numarası gerekli', 'err'); document.getElementById('inp-no').focus(); return; }
+  if (orders.find(o => o.no.toLowerCase() === no.toLowerCase())) {
+    toast('❗ Bu sipariş zaten kayıtlı!', 'err'); return;
+  }
+
+  const amt        = document.getElementById('inp-amt').value;
+  const dateVal    = document.getElementById('inp-date').value;
+  const entryVal   = document.getElementById('inp-entry-date').value;
+  const note       = document.getElementById('inp-note').value.trim();
+  const t          = today();
+
+  // Determine dates based on mode
+  let orderDate  = null;
+  let entryDate  = null;
+
+  if (settings.dateMode === 'entry') {
+    entryDate = t; // auto = today
+    orderDate = null;
+  } else if (settings.dateMode === 'manual') {
+    orderDate = dateVal || t;
+    entryDate = t;
+  } else { // both
+    orderDate = dateVal || t;
+    entryDate = entryVal || t;
+  }
+
+  orders.unshift({
+    id: 'o' + Date.now() + Math.random().toString(36).substr(2,4),
+    no, amount: amt ? parseFloat(amt) : null,
+    date: orderDate, entryDate,
+    note, paid: false, paidAt: null,
+    createdAt: new Date().toISOString()
+  });
+
+  saveData();
+  closeModal();
+  setFilter('all', document.querySelector('[data-f="all"]'));
+  toast('📦 Sipariş eklendi!', 'ok');
+  renderOrders();
+}
+
+// ==============================
+// TOAST
+// ==============================
+let _tt;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + (type||'inf');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.className = 'toast', 2200);
+}
+
+// ==============================
+// HELPERS
+// ==============================
+function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s||'').replace(/"/g,'&quot;'); }
+
+// ==============================
+// KEYBOARD
+// ==============================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) addOrder();
+  if (e.key === 'Escape') closeModal();
+});
+
+// ==============================
+// INIT
+// ==============================
+loadData();
+renderOrders();
+</script>
+</body>
+</html>
